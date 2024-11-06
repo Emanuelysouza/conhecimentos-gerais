@@ -1,0 +1,249 @@
+<html><head><base href="/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards - Conhecimentos Gerais</title>
+<style>
+:root {
+  --primary: #2196f3;
+  --secondary: #ff4081;
+  --light: #f5f5f5;
+  --dark: #212121;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background: var(--light);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  color: var(--dark);
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.stats {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.stat-box {
+  background: white;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.flashcard {
+  width: 100%;
+  max-width: 600px;
+  height: 300px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.flashcard.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front, .flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  font-size: 1.5rem;
+}
+
+.flashcard-back {
+  transform: rotateY(180deg);
+  background: var(--primary);
+  color: white;
+}
+
+.controls {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.btn {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.btn-next {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-wrong {
+  background: #f44336;
+  color: white;
+}
+
+.btn-correct {
+  background: #4caf50;
+  color: white;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+.shake {
+  animation: shake 0.5s;
+}
+
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Flashcards de Conhecimentos Gerais</h1>
+  <div class="stats">
+    <div class="stat-box">Corretas: <span id="correct">0</span></div>
+    <div class="stat-box">Incorretas: <span id="wrong">0</span></div>
+  </div>
+</div>
+
+<div class="flashcard" id="flashcard">
+  <div class="flashcard-inner">
+    <div class="flashcard-front"></div>
+    <div class="flashcard-back"></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn btn-wrong" id="btnWrong">❌ Errei</button>
+  <button class="btn btn-correct" id="btnCorrect">✅ Acertei</button>
+  <button class="btn btn-next" id="btnNext">Próximo ➔</button>
+</div>
+
+<script>
+const flashcards = [
+  {
+    question: "Qual é o maior planeta do Sistema Solar?",
+    answer: "Júpiter"
+  },
+  {
+    question: "Quem pintou a Mona Lisa?",
+    answer: "Leonardo da Vinci"
+  },
+  {
+    question: "Qual é o elemento químico mais abundante no universo?",
+    answer: "Hidrogênio"
+  },
+  {
+    question: "Qual é a capital do Brasil?",
+    answer: "Brasília"
+  },
+  {
+    question: "Em que ano terminou a Segunda Guerra Mundial?",
+    answer: "1945"
+  },
+  {
+    question: "Qual é o maior oceano do mundo?",
+    answer: "Oceano Pacífico"
+  },
+  {
+    question: "Quem escreveu 'Dom Quixote'?",
+    answer: "Miguel de Cervantes"
+  },
+  {
+    question: "Qual é o osso mais longo do corpo humano?",
+    answer: "Fêmur"
+  }
+];
+
+let currentCard = 0;
+let correctCount = 0;
+let wrongCount = 0;
+
+const flashcard = document.getElementById('flashcard');
+const frontCard = document.querySelector('.flashcard-front');
+const backCard = document.querySelector('.flashcard-back');
+const btnNext = document.getElementById('btnNext');
+const btnCorrect = document.getElementById('btnCorrect');
+const btnWrong = document.getElementById('btnWrong');
+const correctSpan = document.getElementById('correct');
+const wrongSpan = document.getElementById('wrong');
+
+function showCard() {
+  frontCard.textContent = flashcards[currentCard].question;
+  backCard.textContent = flashcards[currentCard].answer;
+  flashcard.classList.remove('flipped');
+}
+
+function nextCard() {
+  currentCard = (currentCard + 1) % flashcards.length;
+  showCard();
+}
+
+flashcard.addEventListener('click', () => {
+  flashcard.classList.toggle('flipped');
+});
+
+btnNext.addEventListener('click', nextCard);
+
+btnCorrect.addEventListener('click', () => {
+  correctCount++;
+  correctSpan.textContent = correctCount;
+  nextCard();
+});
+
+btnWrong.addEventListener('click', () => {
+  wrongCount++;
+  wrongSpan.textContent = wrongCount;
+  flashcard.classList.add('shake');
+  setTimeout(() => {
+    flashcard.classList.remove('shake');
+  }, 500);
+  nextCard();
+});
+
+// Iniciar com o primeiro cartão
+showCard();
+</script>
+</body></html>
